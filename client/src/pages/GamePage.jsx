@@ -11,6 +11,7 @@ function GamePage() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const [respawnCount, setRespawnCount] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [roomInfo, setRoomInfo] = useState(null);
     const [players, setPlayers] = useState([]);
@@ -61,6 +62,25 @@ function GamePage() {
                     return prev - 1;
                 });
             }, 1000);
+        });
+
+        socket.on("player_died", (data) => {
+            if (data.id === socket.id) {
+                setRespawnCount(3);
+                const interval = setInterval(() => {
+                    setRespawnCount((prev) => {
+                        if (prev <= 1) {
+                            clearInterval(interval);
+                            return null;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+            }
+        });
+
+        socket.on("player_respawn", (data) => {
+            if (data.id === socket.id) setRespawnCount(null);
         });
 
         socket.on("game_state", (data) => {
@@ -206,6 +226,27 @@ function GamePage() {
                     ⚠ {errorMsg}
                 </div>
             )}
+
+            {respawnCount !== null && (
+                <div
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(0,0,0,0.6)",
+                        pointerEvents: "none",
+                        zIndex: 50,
+                    }}>
+                    <h2 style={{color: "#ff4444", fontSize: "36px"}}>You Died</h2>
+                    <p style={{color: "#ffffff", fontSize: "20px", marginTop: "12px"}}>
+                        Respawning in <span style={{color: "#ffdd00", fontWeight: "bold"}}>{respawnCount}</span>
+                    </p>
+                </div>
+            )}
+
             {/* Top bar */}
             <div className='game-top-bar'>
                 <span>Room: {roomInfo?.code}</span>

@@ -25,7 +25,8 @@ function createPlayer(socket) {
     kills: 0,
     deaths: 0,
     team: null,
-    alive: true
+    alive: true,
+    invincible: false
   }
 }
 

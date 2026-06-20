@@ -10,15 +10,16 @@ router.post('/google', async (req, res) => {
   const { token } = req.body
 
   try {
-    // 1. Verify token with Google
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID
+    // Use access_token to fetch user info from Google
+    const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
     })
 
-    const { sub: google_id, email, name, picture } = ticket.getPayload()
+    if (!googleRes.ok) return res.status(401).json({ error: 'Invalid Google token' })
 
-    // 2. Find or create user in DB
+    const { sub: google_id, email, name, picture } = await googleRes.json()
+
+    // Find or create user in DB
     let user = await prisma.user.findUnique({ where: { google_id } })
 
     if (!user) {
@@ -33,7 +34,6 @@ router.post('/google', async (req, res) => {
       })
     }
 
-    // 3. Create JWT
     const jwtToken = jwt.sign(
       { id: user.id, username: user.username },
       process.env.JWT_SECRET,

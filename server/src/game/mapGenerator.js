@@ -9,9 +9,9 @@ const CONFIG = {
   BULLET_SPEED: 1000,          // pixels per second
   BULLET_DAMAGE: 25,          // damage per bullet (5 hits to kill)
   PLAYER_SPEED: 200,          // pixels per second
-  FIRE_RATE: 5,               // bullets per second
+  FIRE_RATE: 6,               // bullets per second
   STARTING_AMMO: 60,
-  RESPAWN_DELAY: 1500,        // 3 seconds in ms
+  RESPAWN_DELAY: 3000,        // 3 seconds in ms
 }
 
 function generateMap(type) {

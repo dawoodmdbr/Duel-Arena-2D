@@ -26,9 +26,6 @@ module.exports = (socket, io, rooms) => {
 
         const {grid, tileSize} = room.mapData;
 
-        // Wall collision check
-        if (isColliding(x, y, grid, tileSize)) return;
-
         const maxMove = (CONFIG.PLAYER_SPEED / 60) * 5;
         const dx = Math.abs(x - player.x);
         const dy = Math.abs(y - player.y);
@@ -52,6 +49,7 @@ module.exports = (socket, io, rooms) => {
             player.y = y;
             return;
         }
+        // Full block — don't move
     });
 
     // Player shoots

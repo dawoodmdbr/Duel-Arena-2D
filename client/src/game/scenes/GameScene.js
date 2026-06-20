@@ -121,7 +121,7 @@ export default class GameScene extends Phaser.Scene {
         const me = this.serverPlayers.find((p) => p.id === this.myId);
         if (!me || !me.alive) return;
 
-        const speed = (60 / 60) * 5; // 100 units/sec, adjusted for 60 FPS
+        const speed = (75 / 60) * 5; // 100 units/sec, adjusted for 60 FPS
         let x = me.x;
         let y = me.y;
         let moved = false;
@@ -182,9 +182,11 @@ export default class GameScene extends Phaser.Scene {
             }
 
             // Player circle
-            this.playerGraphics.fillStyle(color);
+            const alpha = player.invincible ? (Math.floor(Date.now() / 150) % 2 === 0 ? 0.3 : 1) : 1;
+
+            this.playerGraphics.fillStyle(color, alpha);
             this.playerGraphics.fillCircle(player.x, player.y, 12);
-            this.playerGraphics.lineStyle(2, 0xffffff, 0.4);
+            this.playerGraphics.lineStyle(2, 0xffffff, 0.4 * alpha);
             this.playerGraphics.strokeCircle(player.x, player.y, 12);
 
             // Initials label
