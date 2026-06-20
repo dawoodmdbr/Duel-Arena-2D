@@ -24,7 +24,6 @@ export default class GameScene extends Phaser.Scene {
         this.playerGraphics = null;
         this.bulletGraphics = null;
         this.lastShot = 0;
-        this.localPos = null;
         this.FIRE_INTERVAL = 1000 / 6; // 6 BPS
     }
 
@@ -97,13 +96,6 @@ export default class GameScene extends Phaser.Scene {
         this.serverBullets = data.bullets;
         this.serverAmmo = data.ammo_pickups;
 
-        // Correct local position if too far from server
-        const me = data.players.find((p) => p.id === this.myId);
-        if (me && this.localPos) {
-            const dist = Math.hypot(me.x - this.localPos.x, me.y - this.localPos.y);
-            if (dist > 64) this.localPos = {x: me.x, y: me.y};
-        }
-
         // Show/hide ammo pickups
         data.ammo_pickups.forEach((pickup) => {
             if (this.ammoPickups[pickup.id]) {
@@ -129,12 +121,9 @@ export default class GameScene extends Phaser.Scene {
         const me = this.serverPlayers.find((p) => p.id === this.myId);
         if (!me || !me.alive) return;
 
-        // Initialize local position from server
-        if (!this.localPos) this.localPos = {x: me.x, y: me.y};
-
-        const speed = 3;
-        let x = this.localPos.x;
-        let y = this.localPos.y;
+        const speed = 3; // 100 units/sec, adjusted for 60 FPS
+        let x = me.x;
+        let y = me.y;
         let moved = false;
 
         if (this.wasd.left.isDown) {
@@ -155,11 +144,8 @@ export default class GameScene extends Phaser.Scene {
         }
 
         if (moved) {
-            this.localPos = {x, y};
             this.socket.emit("player_move", {x, y});
             this.cameras.main.centerOn(x, y);
-        } else {
-            this.cameras.main.centerOn(this.localPos.x, this.localPos.y);
         }
     }
 
@@ -197,14 +183,13 @@ export default class GameScene extends Phaser.Scene {
 
             // Player circle
             const alpha = player.invincible ? (Math.floor(Date.now() / 150) % 2 === 0 ? 0.3 : 1) : 1;
-            const renderX = player.id === this.myId && this.localPos ? this.localPos.x : player.x;
-            const renderY = player.id === this.myId && this.localPos ? this.localPos.y : player.y;
 
             this.playerGraphics.fillStyle(color, alpha);
-            this.playerGraphics.fillCircle(renderX, renderY, 12);
+            this.playerGraphics.fillCircle(player.x, player.y, 12);
             this.playerGraphics.lineStyle(2, 0xffffff, 0.4 * alpha);
-            this.playerGraphics.strokeCircle(renderX, renderY, 12);
+            this.playerGraphics.strokeCircle(player.x, player.y, 12);
 
+            // Initials label
             if (!this.playerLabels[player.id]) {
                 const initials = player.username
                     .split(" ")
@@ -212,11 +197,12 @@ export default class GameScene extends Phaser.Scene {
                     .join("")
                     .toUpperCase()
                     .substring(0, 2);
+
                 this.playerLabels[player.id] = this.add
-                    .text(renderX, renderY - 20, initials, {fontSize: "10px", color: "#ffffff", fontStyle: "bold"})
+                    .text(player.x, player.y - 20, initials, {fontSize: "10px", color: "#ffffff", fontStyle: "bold"})
                     .setOrigin(0.5);
             } else {
-                this.playerLabels[player.id].setPosition(renderX, renderY - 20);
+                this.playerLabels[player.id].setPosition(player.x, player.y - 20);
             }
         });
     }
