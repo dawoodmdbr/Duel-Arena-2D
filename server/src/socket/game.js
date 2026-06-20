@@ -115,7 +115,6 @@ module.exports = (socket, io, rooms) => {
         if (!room) return;
 
         room.players.delete(socket.id);
-        io.to(socket.currentRoom).emit("player_left", {id: socket.id});
 
         if (room.players.size === 0) {
             clearTimeout(room.timer);
@@ -123,21 +122,23 @@ module.exports = (socket, io, rooms) => {
             return;
         }
 
-        // Transfer creator to next player
+        // Transfer creator if creator left
         if (room.creator_id === socket.id) {
             const nextPlayer = [...room.players.values()][0];
             room.creator_id = nextPlayer.id;
-            io.to(socket.currentRoom).emit("room_updated", {
-                players: [...room.players.values()],
-                room: {
-                    code: room.code,
-                    game_mode: room.game_mode,
-                    map_type: room.map_type,
-                    max_players: room.max_players,
-                    time_limit: room.time_limit,
-                    creator_id: room.creator_id,
-                },
-            });
         }
+
+        // Always broadcast updated room to everyone
+        io.to(socket.currentRoom).emit("room_updated", {
+            players: [...room.players.values()],
+            room: {
+                code: room.code,
+                game_mode: room.game_mode,
+                map_type: room.map_type,
+                max_players: room.max_players,
+                time_limit: room.time_limit,
+                creator_id: room.creator_id,
+            },
+        });
     });
 };
