@@ -144,6 +144,63 @@ label {
   margin-bottom: 4px;
 }
 
+/* FOOTER */
+.home-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: #0d0d1a;
+  border-top: 1px solid #2a2a4a;
+}
+
+.footer-credit {
+  font-size: 13px;
+  color: #666;
+}
+
+.footer-name {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 16px;
+}
+
+.social-link {
+  color: #666;
+  transition: color 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.social-link:hover {
+  color: #00ff88;
+  transform: translateY(-2px);
+}
+
+.footer-copy {
+  font-size: 11px;
+  color: #444;
+}
+
+/* GAME CANVAS CENTERED */
+.game-canvas {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f0f1a;
+  overflow: hidden;
+}
+
 /* LOBBY PAGE */
 .lobby-page {
   display: flex;
