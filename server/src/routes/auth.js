@@ -22,6 +22,7 @@ router.post("/google", async (req, res) => {
         // Find or create user in DB
         let user = await prisma.user.findUnique({where: {google_id}});
 
+        let isNew = false;
         if (!user) {
             user = await prisma.user.create({
                 data: {
