@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  google_id  String?  @unique
+  username   String   @unique
+  email      String?  @unique
+  avatar_url String?
+  is_guest   Boolean  @default(false)
+  created_at DateTime @default(now())
+  stats      Stat[]
+}
+
+model Match {
+  id          String    @id @default(uuid())
+  room_code   String    @unique
+  game_mode   String    @default("FFA")
+  map_type    String    @default("SMALL")
+  status      String    @default("WAITING")
+  max_players Int       @default(8)
+  time_limit  Int       @default(180)
+  winner_team String?
+  is_public   Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  started_at  DateTime?
+  ended_at    DateTime?
+  stats       Stat[]
+}
+
+model Stat {
+  id       String  @id @default(uuid())
+  match_id String
+  user_id  String
+  kills    Int     @default(0)
+  deaths   Int     @default(0)
+  team     String?
+  won      Boolean @default(false)
+  match    Match   @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  user     User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}

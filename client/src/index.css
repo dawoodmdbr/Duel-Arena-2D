@@ -1,0 +1,290 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0f0f1a;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+}
+
+button {
+  background: #2d2d6e;
+  color: #ffffff;
+  border: 1px solid #4444aa;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #4444aa;
+}
+
+input, select {
+  background: #1a1a3e;
+  color: #ffffff;
+  border: 1px solid #4444aa;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* LOGIN PAGE */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 20px;
+}
+
+.login-page h1 {
+  font-size: 48px;
+  color: #00ff88;
+  letter-spacing: 4px;
+}
+
+.login-page p {
+  color: #888;
+  font-size: 14px;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 260px;
+}
+
+/* HOME PAGE */
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 16px;
+}
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #4444aa;
+}
+
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.main-menu h1 {
+  font-size: 42px;
+  color: #00ff88;
+  letter-spacing: 4px;
+}
+
+.main-menu button {
+  width: 240px;
+  font-size: 16px;
+  padding: 14px;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: #1a1a2e;
+  border: 1px solid #4444aa;
+  padding: 32px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal h2 { color: #00ff88; }
+.modal h3 { font-size: 32px; color: #ffdd00; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+label {
+  font-size: 12px;
+  color: #888;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* LOBBY PAGE */
+.lobby-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 20px;
+  height: 100vh;
+}
+
+.lobby-page h2 { color: #00ff88; font-size: 28px; }
+.lobby-page p  { color: #888; }
+
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 400px;
+}
+
+.player-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #1a1a2e;
+  border: 1px solid #333;
+}
+
+.team-badge {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.team-badge.red { background: #ff4444; }
+.team-badge.blue { background: #4488ff; }
+
+.lobby-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* GAME PAGE */
+.game-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.game-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #4444aa;
+  font-size: 13px;
+  color: #888;
+}
+
+.timer {
+  font-size: 22px;
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.game-canvas {
+  flex: 1;
+}
+
+/* HUD */
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  background: #1a1a2e;
+  border-top: 1px solid #4444aa;
+}
+
+.hud-health {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.health-bar {
+  width: 150px;
+  height: 10px;
+  background: #333;
+  border: 1px solid #555;
+}
+
+.health-fill {
+  height: 100%;
+  background: #00ff88;
+  transition: width 0.2s;
+}
+
+.hud-stats {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* SCOREBOARD */
+.scoreboard-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(15, 15, 26, 0.95);
+  border: 1px solid #4444aa;
+  padding: 24px;
+  min-width: 400px;
+  z-index: 50;
+}
+
+.scoreboard-overlay h3 {
+  color: #00ff88;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  color: #888;
+  font-size: 12px;
+  padding: 6px 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+td {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-bottom: 1px solid #222;
+}
