@@ -114,6 +114,7 @@ function HomePage() {
                 <h1>Duel Arena 2D</h1>
                 <button onClick={handlePlay}>Play</button>
                 <button onClick={() => setShowRoomModal(true)}>Create / Join Room</button>
+                <button onClick={() => navigate('/leaderboard')}>Leaderboard</button>
             </div>
 
             {/* Matchmaking popup */}
