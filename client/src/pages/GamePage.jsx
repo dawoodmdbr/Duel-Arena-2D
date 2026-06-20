@@ -185,17 +185,50 @@ function GamePage() {
                     Mode: {roomInfo?.game_mode} | Map: {roomInfo?.map_type}
                 </p>
 
-                <div className='player-list'>
-                    {players.map((p) => (
-                        <div key={p.id} className={`player-entry ${p.team?.toLowerCase()}`}>
-                            <span>{p.username}</span>
-                            {roomInfo?.game_mode === "TEAM" && (
-                                <span className={`team-badge ${p.team?.toLowerCase()}`}>{p.team}</span>
-                            )}
-                            {p.id === roomInfo?.creator_id && <span>👑</span>}
+                {roomInfo?.game_mode === "TEAM" ? (
+                    <div className='team-columns'>
+                        <div className='team-box red'>
+                            <h3>🔴 Red Team</h3>
+                            {players
+                                .filter((p) => p.team === "RED")
+                                .map((p) => (
+                                    <div key={p.id} className={`player-entry ${p.id === socket.id ? "is-you" : ""}`}>
+                                        <span>{p.username}</span>
+                                        <div style={{display: "flex", gap: "6px"}}>
+                                            {p.id === socket.id && <span className='you-badge'>YOU</span>}
+                                            {p.id === roomInfo?.creator_id && <span>👑</span>}
+                                        </div>
+                                    </div>
+                                ))}
                         </div>
-                    ))}
-                </div>
+                        <div className='team-box blue'>
+                            <h3>🔵 Blue Team</h3>
+                            {players
+                                .filter((p) => p.team === "BLUE")
+                                .map((p) => (
+                                    <div key={p.id} className={`player-entry ${p.id === socket.id ? "is-you" : ""}`}>
+                                        <span>{p.username}</span>
+                                        <div style={{display: "flex", gap: "6px"}}>
+                                            {p.id === socket.id && <span className='you-badge'>YOU</span>}
+                                            {p.id === roomInfo?.creator_id && <span>👑</span>}
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className='player-list'>
+                        {players.map((p) => (
+                            <div key={p.id} className={`player-entry ${p.id === socket.id ? "is-you" : ""}`}>
+                                <span>{p.username}</span>
+                                <div style={{display: "flex", gap: "6px"}}>
+                                    {p.id === socket.id && <span className='you-badge'>YOU</span>}
+                                    {p.id === roomInfo?.creator_id && <span>👑</span>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className='lobby-actions'>
                     {roomInfo?.game_mode === "TEAM" && <button onClick={handleSwitchTeam}>Switch Team</button>}

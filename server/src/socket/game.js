@@ -99,8 +99,8 @@ module.exports = (socket, io, rooms) => {
                 const r = Math.floor(Math.random() * (rows - 2)) + 1;
                 const c = Math.floor(Math.random() * (cols - 2)) + 1;
                 if (grid[r][c] === 0) {
-                    pickup.x = c * tileSize;
-                    pickup.y = r * tileSize;
+                    pickup.x = c * tileSize + tileSize / 2;
+                    pickup.y = r * tileSize + tileSize / 2;
                     pickup.active = true;
                     placed = true;
                 }

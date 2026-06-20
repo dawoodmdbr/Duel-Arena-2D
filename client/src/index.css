@@ -186,6 +186,36 @@ label {
   transform: translateY(-2px);
 }
 
+.team-columns {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.team-box {
+  flex: 1;
+  border: 1px solid #333;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-box h3 { font-size: 14px; margin-bottom: 4px; }
+.team-box.red { border-color: #ff4444; }
+.team-box.blue { border-color: #4488ff; }
+
+.is-you { background: rgba(0, 255, 136, 0.08) !important; }
+
+.you-badge {
+  font-size: 10px;
+  background: #00ff88;
+  color: #000;
+  padding: 1px 6px;
+  font-weight: bold;
+}
+
 .footer-copy {
   font-size: 11px;
   color: #444;
