@@ -6,13 +6,20 @@ require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: process.env.CLIENT_URL,
-    methods: ['GET', 'POST']
-  },
-  transports: ['websocket']  // WebSocket only
-})
+// Source - https://stackoverflow.com/a/65918792
+// Posted by Rohit M
+// Retrieved 2026-06-22, License - CC BY-SA 4.0
+
+const io = require('socket.io')(server, {
+    cors: {
+        origin: process.env.CLIENT_URL,
+        methods: ["GET", "POST"],
+        transports: ['websocket', 'polling'],
+        credentials: true
+    },
+    allowEIO3: true
+});
+
 
 app.use(
     cors({
