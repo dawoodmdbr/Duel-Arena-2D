@@ -11,10 +11,7 @@ const io = new Server(server, {
     origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST']
   },
-  transports: ['polling'],
-  pingInterval: 50,       // Server pings client every 50ms
-  pingTimeout: 5000,
-  upgradeTimeout: 10000
+  transports: ['websocket']  // WebSocket only
 })
 
 app.use(
