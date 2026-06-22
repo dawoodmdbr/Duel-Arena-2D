@@ -25,6 +25,8 @@ export default class GameScene extends Phaser.Scene {
         this.bulletGraphics = null;
         this.lastShot = 0;
         this.FIRE_INTERVAL = 1000 / 6; // 6 BPS
+        this.localX = 0;
+        this.localY = 0;
     }
 
     init(sceneData) {
@@ -96,6 +98,15 @@ export default class GameScene extends Phaser.Scene {
         this.serverBullets = data.bullets;
         this.serverAmmo = data.ammo_pickups;
 
+        const me = data.players.find((p) => p.id === this.myId);
+        if (me) {
+            const dist = Math.hypot(me.x - this.localX, me.y - this.localY);
+            if (dist > 50) {
+                this.localX = me.x;
+                this.localY = me.y;
+            }
+        }
+
         // Show/hide ammo pickups
         data.ammo_pickups.forEach((pickup) => {
             if (this.ammoPickups[pickup.id]) {
@@ -117,35 +128,72 @@ export default class GameScene extends Phaser.Scene {
         this.checkAmmoPickup();
     }
 
+    // handleMovement() {
+    //     const me = this.serverPlayers.find((p) => p.id === this.myId);
+    //     if (!me || !me.alive) return;
+
+    //     const speed = 3; // 100 units/sec, adjusted for 60 FPS
+    //     let x = me.x;
+    //     let y = me.y;
+    //     let moved = false;
+
+    //     if (this.wasd.left.isDown) {
+    //         x -= speed;
+    //         moved = true;
+    //     }
+    //     if (this.wasd.right.isDown) {
+    //         x += speed;
+    //         moved = true;
+    //     }
+    //     if (this.wasd.up.isDown) {
+    //         y -= speed;
+    //         moved = true;
+    //     }
+    //     if (this.wasd.down.isDown) {
+    //         y += speed;
+    //         moved = true;
+    //     }
+
+    //     if (moved) {
+    //         this.socket.emit("player_move", {x, y});
+    //         this.cameras.main.centerOn(x, y);
+    //     }
+    // }
+
     handleMovement() {
         const me = this.serverPlayers.find((p) => p.id === this.myId);
         if (!me || !me.alive) return;
 
-        const speed = 3; // 100 units/sec, adjusted for 60 FPS
-        let x = me.x;
-        let y = me.y;
+        if (!this.localX) {
+            this.localX = me.x;
+            this.localY = me.y;
+        }
+
+        const speed = 3;
         let moved = false;
 
         if (this.wasd.left.isDown) {
-            x -= speed;
+            this.localX -= speed;
             moved = true;
         }
         if (this.wasd.right.isDown) {
-            x += speed;
+            this.localX += speed;
             moved = true;
         }
         if (this.wasd.up.isDown) {
-            y -= speed;
+            this.localY -= speed;
             moved = true;
         }
         if (this.wasd.down.isDown) {
-            y += speed;
+            this.localY += speed;
             moved = true;
         }
 
         if (moved) {
-            this.socket.emit("player_move", {x, y});
-            this.cameras.main.centerOn(x, y);
+            this.socket.emit("player_move", {x: this.localX, y: this.localY});
+            this.cameras.main.centerOn(this.localX, this.localY);
+        } else {
+            this.cameras.main.centerOn(this.localX, this.localY);
         }
     }
 
@@ -188,6 +236,12 @@ export default class GameScene extends Phaser.Scene {
             this.playerGraphics.fillCircle(player.x, player.y, 12);
             this.playerGraphics.lineStyle(2, 0xffffff, 0.4 * alpha);
             this.playerGraphics.strokeCircle(player.x, player.y, 12);
+
+            const renderX = player.id === this.myId ? this.localX : player.x;
+            const renderY = player.id === this.myId ? this.localY : player.y;
+
+            this.playerGraphics.fillStyle(color, alpha);
+            this.playerGraphics.fillCircle(renderX, renderY, 12);
 
             // Initials label
             if (!this.playerLabels[player.id]) {
