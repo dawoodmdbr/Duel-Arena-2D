@@ -6,13 +6,6 @@ const handleGame = require('./game')
 // In-memory game state
 const rooms = new Map()
 
-const io = new Server(server, {
-  cors: {
-    origin: process.env.CLIENT_URL,
-    methods: ['GET', 'POST']
-  }
-})
-
 module.exports = (io) => {
   io.on('connection', (socket) => {
     console.log(`Player connected: ${socket.id}`)

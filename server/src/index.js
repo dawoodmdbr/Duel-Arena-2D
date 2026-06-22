@@ -7,11 +7,15 @@ require("dotenv").config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: process.env.CLIENT_URL,
-        methods: ["GET", "POST"],
-    },
-});
+  cors: {
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST']
+  },
+  transports: ['polling'],
+  pingInterval: 50,       // Server pings client every 50ms
+  pingTimeout: 5000,
+  upgradeTimeout: 10000
+})
 
 app.use(
     cors({
