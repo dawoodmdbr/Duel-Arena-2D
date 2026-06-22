@@ -127,73 +127,35 @@ export default class GameScene extends Phaser.Scene {
         this.renderBullets();
         this.checkAmmoPickup();
     }
-
-    // handleMovement() {
-    //     const me = this.serverPlayers.find((p) => p.id === this.myId);
-    //     if (!me || !me.alive) return;
-
-    //     const speed = 3; // 100 units/sec, adjusted for 60 FPS
-    //     let x = me.x;
-    //     let y = me.y;
-    //     let moved = false;
-
-    //     if (this.wasd.left.isDown) {
-    //         x -= speed;
-    //         moved = true;
-    //     }
-    //     if (this.wasd.right.isDown) {
-    //         x += speed;
-    //         moved = true;
-    //     }
-    //     if (this.wasd.up.isDown) {
-    //         y -= speed;
-    //         moved = true;
-    //     }
-    //     if (this.wasd.down.isDown) {
-    //         y += speed;
-    //         moved = true;
-    //     }
-
-    //     if (moved) {
-    //         this.socket.emit("player_move", {x, y});
-    //         this.cameras.main.centerOn(x, y);
-    //     }
-    // }
-
     handleMovement() {
         const me = this.serverPlayers.find((p) => p.id === this.myId);
         if (!me || !me.alive) return;
 
-        if (!this.localX) {
-            this.localX = me.x;
-            this.localY = me.y;
-        }
-
         const speed = 3;
+        let x = me.x;
+        let y = me.y;
         let moved = false;
 
         if (this.wasd.left.isDown) {
-            this.localX -= speed;
+            x -= speed;
             moved = true;
         }
         if (this.wasd.right.isDown) {
-            this.localX += speed;
+            x += speed;
             moved = true;
         }
         if (this.wasd.up.isDown) {
-            this.localY -= speed;
+            y -= speed;
             moved = true;
         }
         if (this.wasd.down.isDown) {
-            this.localY += speed;
+            y += speed;
             moved = true;
         }
 
         if (moved) {
-            this.socket.emit("player_move", {x: this.localX, y: this.localY});
-            this.cameras.main.centerOn(this.localX, this.localY);
-        } else {
-            this.cameras.main.centerOn(this.localX, this.localY);
+            this.socket.emit("player_move", {x, y});
+            this.cameras.main.centerOn(x, y);
         }
     }
 
@@ -218,6 +180,8 @@ export default class GameScene extends Phaser.Scene {
         if (this.playerGraphics) this.playerGraphics.destroy();
         this.playerGraphics = this.add.graphics();
 
+        if (!this.playerTweens) this.playerTweens = {};
+
         this.serverPlayers.forEach((player) => {
             if (!player.alive) return;
 
@@ -229,19 +193,28 @@ export default class GameScene extends Phaser.Scene {
                 color = player.team === me?.team ? COLORS.SELF_TEAM : COLORS.ENEMY;
             }
 
+            // Initialize tween position
+            if (!this.playerTweens[player.id]) {
+                this.playerTweens[player.id] = {x: player.x, y: player.y};
+            }
+
+            // Smooth tween to new position
+            this.tweens.to(this.playerTweens[player.id], {
+                x: player.x,
+                y: player.y,
+                duration: 50,
+                overwrite: true,
+            });
+
+            const tweenPos = this.playerTweens[player.id];
+
             // Player circle
             const alpha = player.invincible ? (Math.floor(Date.now() / 150) % 2 === 0 ? 0.3 : 1) : 1;
 
             this.playerGraphics.fillStyle(color, alpha);
-            this.playerGraphics.fillCircle(player.x, player.y, 12);
+            this.playerGraphics.fillCircle(tweenPos.x, tweenPos.y, 12);
             this.playerGraphics.lineStyle(2, 0xffffff, 0.4 * alpha);
-            this.playerGraphics.strokeCircle(player.x, player.y, 12);
-
-            const renderX = player.id === this.myId ? this.localX : player.x;
-            const renderY = player.id === this.myId ? this.localY : player.y;
-
-            this.playerGraphics.fillStyle(color, alpha);
-            this.playerGraphics.fillCircle(renderX, renderY, 12);
+            this.playerGraphics.strokeCircle(tweenPos.x, tweenPos.y, 12);
 
             // Initials label
             if (!this.playerLabels[player.id]) {
@@ -253,14 +226,17 @@ export default class GameScene extends Phaser.Scene {
                     .substring(0, 2);
 
                 this.playerLabels[player.id] = this.add
-                    .text(player.x, player.y - 20, initials, {fontSize: "10px", color: "#ffffff", fontStyle: "bold"})
+                    .text(tweenPos.x, tweenPos.y - 20, initials, {
+                        fontSize: "10px",
+                        color: "#ffffff",
+                        fontStyle: "bold",
+                    })
                     .setOrigin(0.5);
             } else {
-                this.playerLabels[player.id].setPosition(player.x, player.y - 20);
+                this.playerLabels[player.id].setPosition(tweenPos.x, tweenPos.y - 20);
             }
         });
     }
-
     renderBullets() {
         if (this.bulletGraphics) this.bulletGraphics.destroy();
         this.bulletGraphics = this.add.graphics();
