@@ -116,64 +116,39 @@ export default class GameScene extends Phaser.Scene {
         this.renderBullets();
         this.checkAmmoPickup();
     }
+
     handleMovement() {
-        if (!this.localPos) {
-            const me = this.serverPlayers.find((p) => p.id === this.myId);
-            if (!me) return;
-            this.localPos = {x: me.x, y: me.y};
+        const me = this.serverPlayers.find((p) => p.id === this.myId);
+        if (!me || !me.alive) return;
+
+        const speed = 3; // 100 units/sec, adjusted for 60 FPS
+        let x = me.x;
+        let y = me.y;
+        let moved = false;
+
+        if (this.wasd.left.isDown) {
+            x -= speed;
+            moved = true;
+        }
+        if (this.wasd.right.isDown) {
+            x += speed;
+            moved = true;
+        }
+        if (this.wasd.up.isDown) {
+            y -= speed;
+            moved = true;
+        }
+        if (this.wasd.down.isDown) {
+            y += speed;
+            moved = true;
         }
 
-        const speed = 3;
-        let dirX = 0,
-            dirY = 0;
-
-        if (this.wasd.left.isDown) dirX = -1;
-        if (this.wasd.right.isDown) dirX = 1;
-        if (this.wasd.up.isDown) dirY = -1;
-        if (this.wasd.down.isDown) dirY = 1;
-
-        if (dirX !== 0 || dirY !== 0) {
-            const newX = this.localPos.x + dirX * speed;
-            const newY = this.localPos.y + dirY * speed;
-
-            // Check collision before moving
-            if (this.isWalkable(newX, newY)) {
-                this.localPos.x = newX;
-                this.localPos.y = newY;
-                this.socket.emit("player_move", {dirX, dirY});
-            }
-
-            this.cameras.main.centerOn(this.localPos.x, this.localPos.y);
+        if (moved) {
+            this.socket.emit("player_move", {x, y});
+            this.cameras.main.centerOn(x, y);
         }
     }
 
-    isWalkable(x, y) {
-        const {grid, tileSize} = this.mapData;
-        const radius = 12; // your player radius
-
-        // Check 4 corners of player hitbox
-        const corners = [
-            {px: x - radius, py: y - radius},
-            {px: x + radius, py: y - radius},
-            {px: x - radius, py: y + radius},
-            {px: x + radius, py: y + radius},
-        ];
-
-        for (const corner of corners) {
-            const col = Math.floor(corner.px / tileSize);
-            const row = Math.floor(corner.py / tileSize);
-
-            // Out of bounds
-            if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) {
-                return false;
-            }
-            // Hit a wall (grid[r][c] === 1)
-            if (grid[row][col] === 1) {
-                return false;
-            }
-        }
-        return true;
-    }
     handleShooting(time) {
         if (time - this.lastShot < this.FIRE_INTERVAL) return;
 
