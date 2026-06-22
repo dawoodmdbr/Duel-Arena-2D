@@ -180,7 +180,7 @@ export default class GameScene extends Phaser.Scene {
         if (this.playerGraphics) this.playerGraphics.destroy();
         this.playerGraphics = this.add.graphics();
 
-        if (!this.playerTweens) this.playerTweens = {};
+        if (!this.playerLabels) this.playerLabels = {};
 
         this.serverPlayers.forEach((player) => {
             if (!player.alive) return;
@@ -193,36 +193,13 @@ export default class GameScene extends Phaser.Scene {
                 color = player.team === me?.team ? COLORS.SELF_TEAM : COLORS.ENEMY;
             }
 
-            let renderX = player.x;
-            let renderY = player.y;
-
-            // Only tween OTHER players, not yourself
-            if (player.id !== this.myId) {
-                if (!this.playerTweens) this.playerTweens = {};
-                if (!this.playerTweens[player.id]) {
-                    this.playerTweens[player.id] = {x: player.x, y: player.y};
-                }
-
-                this.tweens.to(this.playerTweens[player.id], {
-                    x: player.x,
-                    y: player.y,
-                    duration: 50,
-                    overwrite: true,
-                });
-
-                renderX = this.playerTweens[player.id].x;
-                renderY = this.playerTweens[player.id].y;
-            }
-
-            // Player circle
             const alpha = player.invincible ? (Math.floor(Date.now() / 150) % 2 === 0 ? 0.3 : 1) : 1;
 
             this.playerGraphics.fillStyle(color, alpha);
-            this.playerGraphics.fillCircle(renderX, renderY, 12);
+            this.playerGraphics.fillCircle(player.x, player.y, 12);
             this.playerGraphics.lineStyle(2, 0xffffff, 0.4 * alpha);
-            this.playerGraphics.strokeCircle(renderX, renderY, 12);
+            this.playerGraphics.strokeCircle(player.x, player.y, 12);
 
-            // Initials label
             if (!this.playerLabels[player.id]) {
                 const initials = player.username
                     .split(" ")
@@ -232,17 +209,18 @@ export default class GameScene extends Phaser.Scene {
                     .substring(0, 2);
 
                 this.playerLabels[player.id] = this.add
-                    .text(renderX, renderY - 20, initials, {
+                    .text(player.x, player.y - 20, initials, {
                         fontSize: "10px",
                         color: "#ffffff",
                         fontStyle: "bold",
                     })
                     .setOrigin(0.5);
             } else {
-                this.playerLabels[player.id].setPosition(renderX, renderY - 20);
+                this.playerLabels[player.id].setPosition(player.x, player.y - 20);
             }
         });
     }
+
     renderBullets() {
         if (this.bulletGraphics) this.bulletGraphics.destroy();
         this.bulletGraphics = this.add.graphics();
