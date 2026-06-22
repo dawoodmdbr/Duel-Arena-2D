@@ -131,7 +131,7 @@ export default class GameScene extends Phaser.Scene {
         const me = this.serverPlayers.find((p) => p.id === this.myId);
         if (!me || !me.alive) return;
 
-        const speed = 100;
+        const speed = 3;
         let x = me.x;
         let y = me.y;
         let moved = false;
