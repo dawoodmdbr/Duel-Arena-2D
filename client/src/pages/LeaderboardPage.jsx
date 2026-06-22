@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {Sounds} from "../game/sound";
 
 function LeaderboardPage() {
   const navigate = useNavigate()
@@ -32,7 +33,7 @@ function LeaderboardPage() {
     <div className="leaderboard-page">
       <div className="top-bar">
         <span>Leaderboard</span>
-        <button onClick={() => navigate('/home')}>Back</button>
+        <button onClick={() => {Sounds.click();navigate('/home');}}>Back</button>
       </div>
 
       <div className="leaderboard-content">

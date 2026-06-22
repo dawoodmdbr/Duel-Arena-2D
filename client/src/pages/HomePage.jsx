@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import socket from "../socket/socket";
+import {Sounds} from "../game/sound";
 
 const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
@@ -146,15 +147,39 @@ function HomePage() {
             {/* Top bar */}
             <div className='top-bar'>
                 <span>Welcome, {user?.username}</span>
-                <button onClick={handleLogout}>Logout</button>
+                <button
+                    onClick={() => {
+                        Sounds.click();
+                        handleLogout();
+                    }}>
+                    Logout
+                </button>
             </div>
 
             {/* Main buttons */}
             <div className='main-menu'>
                 <h1>Duel Arena 2D</h1>
-                <button onClick={handlePlay}>Play</button>
-                <button onClick={() => setShowRoomModal(true)}>Create / Join Room</button>
-                <button onClick={() => navigate("/leaderboard")}>Leaderboard</button>
+                <button
+                    onClick={() => {
+                        Sounds.click();
+                        handlePlay();
+                    }}>
+                    Play
+                </button>
+                <button
+                    onClick={() => {
+                        Sounds.click();
+                        setShowRoomModal(true);
+                    }}>
+                    Create / Join Room
+                </button>
+                <button
+                    onClick={() => {
+                        Sounds.click();
+                        navigate("/leaderboard");
+                    }}>
+                    Leaderboard
+                </button>
             </div>
 
             {/* Matchmaking popup */}
@@ -175,7 +200,13 @@ function HomePage() {
                                 <p>You will be placed automatically when it ends.</p>
                             </>
                         )}
-                        <button onClick={handleCancelMatchmaking}>Cancel</button>
+                        <button
+                            onClick={() => {
+                                Sounds.click();
+                                handleCancelMatchmaking();
+                            }}>
+                            Cancel
+                        </button>
                     </div>
                 </div>
             )}
@@ -185,8 +216,20 @@ function HomePage() {
                 <div className='modal-overlay'>
                     <div className='modal'>
                         <div className='tabs'>
-                            <button onClick={() => setActiveTab("join")}>Join Room</button>
-                            <button onClick={() => setActiveTab("create")}>Create Room</button>
+                            <button
+                                onClick={() => {
+                                    Sounds.click();
+                                    setActiveTab("join");
+                                }}>
+                                Join Room
+                            </button>
+                            <button
+                                onClick={() => {
+                                    Sounds.click();
+                                    setActiveTab("create");
+                                }}>
+                                Create Room
+                            </button>
                         </div>
 
                         {activeTab === "join" && (
@@ -196,7 +239,13 @@ function HomePage() {
                                     value={roomCode}
                                     onChange={(e) => setRoomCode(e.target.value)}
                                 />
-                                <button onClick={handleJoinRoom}>Join</button>
+                                <button
+                                    onClick={() => {
+                                        Sounds.click();
+                                        handleJoinRoom();
+                                    }}>
+                                    Join
+                                </button>
                             </div>
                         )}
 
@@ -227,12 +276,22 @@ function HomePage() {
                                     value={roomConfig.time_limit}
                                     onChange={(e) => setRoomConfig({...roomConfig, time_limit: +e.target.value})}
                                 />
-
-                                <button onClick={handleCreateRoom}>Create Room</button>
+                                <button
+                                    onClick={() => {
+                                        Sounds.click();
+                                        handleCreateRoom();
+                                    }}>
+                                    Create Room
+                                </button>
                             </div>
                         )}
-
-                        <button onClick={() => setShowRoomModal(false)}>Close</button>
+                        <button
+                            onClick={() => {
+                                Sounds.click();
+                                setShowRoomModal(false);
+                            }}>
+                            Close
+                        </button>
                     </div>
                 </div>
             )}
@@ -253,7 +312,13 @@ function HomePage() {
                             <br />
                             <span style={{color: "#888"}}>— Mian Dawood, Creator</span>
                         </p>
-                        <button onClick={() => setEasterEgg(false)}>ok fine whatever</button>
+                        <button
+                            onClick={() => {
+                                Sounds.click();
+                                setEasterEgg(false);
+                            }}>
+                            ok fine whatever
+                        </button>
                     </div>
                 </div>
             )}

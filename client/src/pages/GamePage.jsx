@@ -3,6 +3,7 @@ import {useNavigate, useLocation} from "react-router-dom";
 import Phaser from "phaser";
 import socket from "../socket/socket";
 import GameScene from "../game/scenes/GameScene";
+import {Sounds} from "../game/sound";
 
 function GamePage() {
     const gameRef = useRef(null);
@@ -49,6 +50,7 @@ function GamePage() {
         });
 
         socket.on("match_started", (data) => {
+            Sounds.start();
             pendingMatchData.current = data;
             setGameStarted(true);
             setTimeLeft(data.time_limit);
@@ -66,6 +68,7 @@ function GamePage() {
 
         socket.on("player_died", (data) => {
             if (data.id === socket.id) {
+                Sounds.death();
                 setRespawnCount(3);
                 const interval = setInterval(() => {
                     setRespawnCount((prev) => {
@@ -81,6 +84,7 @@ function GamePage() {
 
         socket.on("player_respawn", (data) => {
             if (data.id === socket.id) setRespawnCount(null);
+            Sounds.respawn();
         });
 
         socket.on("game_state", (data) => {
@@ -98,6 +102,11 @@ function GamePage() {
         socket.on("match_end", (data) => {
             setMatchResult(data);
             if (phaserRef.current) phaserRef.current.destroy(true);
+            if (data.winner === myPlayer?.team || data.winner === socket.id) {
+                Sounds.win();
+            } else {
+                Sounds.lose();
+            }
         });
 
         // Keyboard scoreboard toggle
@@ -231,9 +240,9 @@ function GamePage() {
                 )}
 
                 <div className='lobby-actions'>
-                    {roomInfo?.game_mode === "TEAM" && <button onClick={handleSwitchTeam}>Switch Team</button>}
-                    {isCreator && <button onClick={handleStartGame}>Start Game</button>}
-                    <button onClick={handleLeave}>Leave</button>
+                    {roomInfo?.game_mode === "TEAM" && <button onClick={() => { Sounds.click(); handleSwitchTeam(); }}>Switch Team</button>}
+                    {isCreator && <button onClick={() => { Sounds.click(); handleStartGame(); }}>Start Game</button>}
+                    <button onClick={() => { Sounds.click(); handleLeave(); }}>Leave</button>
                 </div>
             </div>
         );
@@ -286,7 +295,7 @@ function GamePage() {
                 <span className='timer'>{timeLeft !== null ? formatTime(timeLeft) : ""}</span>
                 <div style={{display: "flex", gap: "12px", alignItems: "center"}}>
                     <span style={{color: "#888", fontSize: "13px"}}>Tab: Scoreboard</span>
-                    <button onClick={handleLeave} style={{padding: "4px 12px", fontSize: "12px"}}>
+                    <button onClick={() => { Sounds.click(); handleLeave(); }} style={{padding: "4px 12px", fontSize: "12px"}}>
                         Leave
                     </button>
                 </div>
@@ -367,7 +376,7 @@ function GamePage() {
                                     ))}
                             </tbody>
                         </table>
-                        <button onClick={handleLeave}>Back to Menu</button>
+                        <button onClick={() => { Sounds.click(); handleLeave(); }}>Back to Menu</button>
                     </div>
                 </div>
             )}

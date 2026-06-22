@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import {Sounds} from "../sound.js";
 
 const COLORS = {
     FLOOR: 0x2d2d4e,
@@ -116,6 +117,9 @@ export default class GameScene extends Phaser.Scene {
                 }
             }
         });
+        const prevMe = this.serverPlayers?.find((p) => p.id === this.myId);
+        const newMe = data.players.find((p) => p.id === this.myId);
+        if (prevMe && newMe && newMe.health < prevMe.health) Sounds.hit();
     }
 
     update(time) {
@@ -173,6 +177,7 @@ export default class GameScene extends Phaser.Scene {
         // Normalize diagonal direction
         const len = Math.sqrt(dirX * dirX + dirY * dirY);
         this.socket.emit("player_shoot", {dirX: dirX / len, dirY: dirY / len});
+        Sounds.shoot();
         this.lastShot = time;
     }
 
@@ -239,6 +244,7 @@ export default class GameScene extends Phaser.Scene {
             const dist = Math.hypot(pickup.x - me.x, pickup.y - me.y);
             if (dist < 20) {
                 this.socket.emit("pickup_ammo", {ammo_id: pickup.id});
+                Sounds.pickup();
             }
         });
     }
